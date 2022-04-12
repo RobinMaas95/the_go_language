@@ -5,10 +5,21 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strings"
 )
+
+const prefix = "http://"
+
+func addHTTP(url string) string {
+	if !strings.HasPrefix(url, prefix) {
+		url = prefix + url
+	}
+	return url
+}
 
 func main() {
 	for _, url := range os.Args[1:] {
+		url = addHTTP(url)
 		resp, err := http.Get(url)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "fetch: %v\n", err)
