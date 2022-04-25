@@ -9,6 +9,7 @@ import (
 	"io"
 	"math"
 	"os"
+	"strings"
 )
 
 type mathFunction func(x, y float64) (float64, bool)
@@ -23,13 +24,19 @@ const (
 	xyscale       = width / 2 / xyrange // pixels per x or y unit
 	zscale        = height * 0.4        // pixels per z unit
 	angle         = math.Pi / 6         // angle of x, y, y axes (=30º)
+	usage         = "Usage: main.go filename org|saddle|eggbox"
 )
 
 var sin30, cos30 = math.Sin(angle), math.Cos(angle)
 
 func main() {
+	if len(os.Args) != 3 {
+		fmt.Fprintln(os.Stderr, usage)
+		os.Exit(1)
+	}
+
 	// Make sure that the target file exists
-	f, err := os.OpenFile("result.svg", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0600)
+	f, err := os.OpenFile(strings.Replace(os.Args[1], ".svg", "", -1)+".svg", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0600)
 	if err != nil {
 		panic(err)
 	}
