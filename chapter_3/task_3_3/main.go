@@ -36,7 +36,7 @@ func main() {
 	}
 
 	// Create target file
-	f, err := os.OpenFile(strings.Replace(os.Args[1], ".svg", "", -1)+".svg", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0600)
+	f, err := os.OpenFile(strings.Replace(os.Args[1], ".svg", "", -1)+".svg", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
 	if err != nil {
 		panic(err)
 	}
@@ -56,7 +56,7 @@ func main() {
 }
 
 func svg(w io.Writer, targetMathFunction mathFunction) {
-	fmt.Fprintf(w, "<svg xmlns='http://www.w3.org/2000/svg' "+"style='stroke: grey; fill: whithe; stroke-width: 0.7' "+
+	fmt.Fprintf(w, "<svg xmlns='http://www.w3.org/2000/svg' "+"style='stroke: blue; fill: whithe; stroke-width: 0.7' "+
 		"width='%d' height='%d'>", width, height)
 
 	for i := 0; i < cells; i++ {
