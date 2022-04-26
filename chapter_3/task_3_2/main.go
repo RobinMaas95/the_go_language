@@ -18,7 +18,7 @@ type Writer interface {
 }
 
 const (
-	width, height = 600, 420            // canvas size
+	width, height = 600, 320            // canvas size
 	cells         = 100                 // numnber of grid cells
 	xyrange       = 30.0                // axis ranges -xyrange ... + xyrange
 	xyscale       = width / 2 / xyrange // pixels per x or y unit
@@ -30,18 +30,30 @@ const (
 var sin30, cos30 = math.Sin(angle), math.Cos(angle)
 
 func main() {
+	// Check if the correct number of arguments was passed
 	if len(os.Args) != 3 {
 		fmt.Fprintln(os.Stderr, usage)
 		os.Exit(1)
 	}
 
-	// Make sure that the target file exists
+	// Create target file
 	f, err := os.OpenFile(strings.Replace(os.Args[1], ".svg", "", -1)+".svg", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0600)
 	if err != nil {
 		panic(err)
 	}
 	defer f.Close()
-	svg(f, org)
+
+	// Run svg generation
+	var mfunc mathFunction
+	switch os.Args[2] {
+	case "eggbox":
+		mfunc = eggbox
+	case "saddle":
+		mfunc = saddle
+	default:
+		mfunc = org
+	}
+	svg(f, mfunc)
 }
 
 func svg(w io.Writer, targetMathFunction mathFunction) {
@@ -84,9 +96,32 @@ func corner(i, j int, targetMathFunction mathFunction) (float64, float64, bool) 
 func org(x, y float64) (float64, bool) {
 	r := math.Hypot(x, y) // distance from (0,0)
 	surfaceHeight := math.Sin(r) / r
+
 	if math.IsNaN(surfaceHeight) {
 		return 0.0, false
 	}
 	return surfaceHeight, true
 
+}
+
+func eggbox(x, y float64) (float64, bool) {
+	res := -0.1 * (-math.Cos(x) + -math.Cos(y))
+
+	if math.IsNaN(res) {
+		return 0.0, false
+	}
+	return res, true
+}
+
+func saddle(x, y float64) (float64, bool) {
+	a := 25.0
+	b := 17.0
+	a2 := a * a
+	b2 := b * b
+	res := (y*y/a2 - x*x/b2)
+
+	if math.IsNaN(res) {
+		return 0.0, false
+	}
+	return res, true
 }
