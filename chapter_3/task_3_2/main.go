@@ -13,9 +13,6 @@ import (
 )
 
 type mathFunction func(x, y float64) (float64, bool)
-type Writer interface {
-	Write(p []byte) (n int, err error)
-}
 
 const (
 	width, height = 600, 320            // canvas size
